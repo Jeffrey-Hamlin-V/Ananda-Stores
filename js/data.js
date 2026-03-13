@@ -12,7 +12,7 @@ const CONFIG = {
   phone1: '0452-2622007',
   phone2: '4210044',
   phoneTel: '04522622007', // for tel: link (no hyphen)
-  whatsappNumber: '914522622007', // 91 + Madurai 452 2622007 for wa.me (use mobile number if different)
+  whatsappNumber: '914522622007', // 91 + Madurai 452 2622007 for wa.me
   mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3930.138356894!2d78.1215!3d9.919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c5923!2sAmman+Sannathi%2C+Madurai%2C+Tamil+Nadu+625001!5e0!3m2!1sen!2sin!4v1!5m2!1sen!2sin',
 };
 
@@ -24,12 +24,7 @@ const TRANSLATIONS = {
     shopNameTa: 'ஆனந்தா ஸ்டோர்ஸ்',
     langToggleLabel: 'Click here to change language',
     tagline: 'Fine grade wheat flour, maida, rava, atta, sugar, salt, pulses & palm oil — wholesale',
-    nav: {
-      home: 'Home',
-      products: 'Products',
-      about: 'About',
-      contact: 'Contact Us',
-    },
+    nav: { home: 'Home', products: 'Products', about: 'About', contact: 'Contact Us' },
     hero: {
       title: 'ANANDA STORES',
       subtitle: 'ஆனந்தா ஸ்டோர்ஸ்',
@@ -57,12 +52,10 @@ const TRANSLATIONS = {
       priceHigh: 'Price: High to Low',
       nameAZ: 'Name: A-Z',
     },
-    filter: {
-      maxPrice: 'Max Price',
-    },
+    filter: { maxPrice: 'Max Price' },
     about: {
       title: 'About Us',
-      intro: 'Ananda Stores has been serving the Madurai community with dedication since 1983. Founded on the principles of quality and reliability, we have grown from a small family venture into one of the city\'s most trusted wholesale grocery providers. Our deep understanding of customer needs allows us to source only the finest-grade products, ensuring that every bag of flour, every measure of pulse, and every drop of oil meets our rigorous standards. Over the decades, we have built lasting relationships with both suppliers and customers, making us a cornerstone of Madurai\'s wholesale market.',
+      intro: "Ananda Stores has been serving the Madurai community with dedication since 1983. Founded on the principles of quality and reliability, we have grown from a small family venture into one of the city's most trusted wholesale grocery providers. Our deep understanding of customer needs allows us to source only the finest-grade products, ensuring that every bag of flour, every measure of pulse, and every drop of oil meets our rigorous standards. Over the decades, we have built lasting relationships with both suppliers and customers, making us a cornerstone of Madurai's wholesale market.",
     },
     highlights: {
       title: 'Why Choose Ananda Stores?',
@@ -90,9 +83,7 @@ const TRANSLATIONS = {
       success: 'Thank you! Your message has been sent successfully.',
       error: 'Please fill in all required fields correctly.',
     },
-    footer: {
-      credit: 'Website by freelance developer',
-    },
+    footer: { credit: 'Website by freelance developer' },
   },
   ta: {
     gstin: 'GSTIN: 33AFHPB9942A1ZV',
@@ -101,12 +92,7 @@ const TRANSLATIONS = {
     shopNameTa: 'ஆனந்தா ஸ்டோர்ஸ்',
     langToggleLabel: 'மொழியை மாற்ற கிளிக் செய்யுங்கள்',
     tagline: 'நயம் கிரேடு கோதுமை மாவு, மைதா, ரவை, ஆட்டா, சீனி, உப்பு, பருப்பு வகைகள் மற்றும் பாமா ஆயில் அனைத்தும் மொத்த வியாபாரம்',
-    nav: {
-      home: 'முகப்பு',
-      products: 'பொருட்கள்',
-      about: 'எங்களைப் பற்றி',
-      contact: 'தொடர்பு',
-    },
+    nav: { home: 'முகப்பு', products: 'பொருட்கள்', about: 'எங்களைப் பற்றி', contact: 'தொடர்பு' },
     hero: {
       title: 'ANANDA STORES',
       subtitle: 'ஆனந்தா ஸ்டோர்ஸ்',
@@ -134,9 +120,7 @@ const TRANSLATIONS = {
       priceHigh: 'விலை: அதிகத்திலிருந்து குறைந்ததிற்கு',
       nameAZ: 'பெயர்: ஆ முதல் ஃ வரை',
     },
-    filter: {
-      maxPrice: 'அதிகபட்ச விலை',
-    },
+    filter: { maxPrice: 'அதிகபட்ச விலை' },
     about: {
       title: 'எங்களைப் பற்றி',
       intro: 'ஆனந்தா ஸ்டோர்ஸ் 1983 ஆம் ஆண்டு முதல் மதுரை மக்களின் நம்பிக்கைக்குரிய மொத்த விற்பனை நிறுவனமாக விளங்கி வருகிறது. தரம் மற்றும் நேர்மை ஆகியவற்றை அடிப்படை கொள்கைகளாக கொண்டு தொடங்கப்பட்ட எங்கள் நிறுவனம், இன்று மதுரையின் மிகச்சிறந்த மளிகை மண்டி நிறுவனங்களில் ஒன்றாக வளர்ந்துள்ளது. நுகர்வோரின் தேவைகளை நன்குணர்ந்து, மிகச்சிறந்த தரம் கொண்ட கோதுமை மாவு, மைதா, ரவை, பருப்பு வகைகள் மற்றும் சமையல் எண்ணெய் ஆகியவற்றை நேரடியாக கொள்முதல் செய்து நியாயமான விலையில் வழங்கி வருகிறோம். கடந்த 40 ஆண்டுகளுக்கும் மேலாக எமது வாடிக்கையாளர்களுடன் நாங்கள் கொண்டுள்ள ஆழமான உறவே எமது வெற்றியின் ரகசியம்.',
@@ -167,34 +151,11 @@ const TRANSLATIONS = {
       success: 'மிக்க நன்றி! உங்கள் செய்தி வெற்றிகரமாக அனுப்பப்பட்டது.',
       error: 'தயவுசெய்து அனைத்து விவரங்களையும் சரியாக நிரப்பவும்.',
     },
-    footer: {
-      credit: 'வலைத்தளம் ஃப்ரீலான்ஸ் டெவலப்பர்',
-    },
+    footer: { credit: 'வலைத்தளம் ஃப்ரீலான்ஸ் டெவலப்பர்' },
   },
 };
 
 /**
- * Product list with categories and bilingual names.
- * category: sugar | flours | dhalls | oils | other
+ * Product list strictly empty for PostgreSQL migration.
  */
-const PRODUCTS = [
-  { id: 'sugar-50', category: 'sugar', brand: '', weight: '50kg', price: 'xxx.xx', nameEn: 'Sugar', nameTa: 'சீனி' },
-  { id: 'maida-lion-50', category: 'flours', brand: 'Lion', weight: '50kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'maida-lion-30', category: 'flours', brand: 'Lion', weight: '30kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'maida-lion-10', category: 'flours', brand: 'Lion', weight: '10kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'maida-cycle-50', category: 'flours', brand: 'Cycle', weight: '50kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'maida-cycle-30', category: 'flours', brand: 'Cycle', weight: '30kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'maida-cycle-10', category: 'flours', brand: 'Cycle', weight: '10kg', price: 'xxx.xx', nameEn: 'Maida', nameTa: 'மைதா' },
-  { id: 'sooji-lion-30', category: 'flours', brand: 'Lion', weight: '30kg', price: 'xxx.xx', nameEn: 'Sooji', nameTa: 'ரவை' },
-  { id: 'atta-lion-5', category: 'flours', brand: 'Lion', weight: '5kg', price: 'xxx.xx', nameEn: 'Whole Wheat Atta', nameTa: 'கோதுமை ஆட்டா' },
-  { id: 'atta-lion-30', category: 'flours', brand: 'Lion', weight: '30kg', price: 'xxx.xx', nameEn: 'Whole Wheat Atta', nameTa: 'கோதுமை ஆட்டா' },
-  { id: 'dhall-orid-30', category: 'dhalls', brand: '', weight: '30kg', price: 'xxx.xx', nameEn: 'Orid Dhall', nameTa: 'உளுந்து பருப்பு' },
-  { id: 'dhall-toor-30', category: 'dhalls', brand: '', weight: '30kg', price: 'xxx.xx', nameEn: 'Toor Dhall', nameTa: 'துவரம் பருப்பு' },
-  { id: 'dhall-gram-30', category: 'dhalls', brand: '', weight: '30kg', price: 'xxx.xx', nameEn: 'Gram Dhall', nameTa: 'கொண்டை கடலை' },
-  { id: 'dhall-moong-30', category: 'dhalls', brand: '', weight: '30kg', price: 'xxx.xx', nameEn: 'Moong Dhall', nameTa: 'பாசிப்பருப்பு' },
-  { id: 'dhall-peas-50', category: 'dhalls', brand: '', weight: '50kg', price: 'xxx.xx', nameEn: 'Peas Dhall', nameTa: 'பட்டாணி பருப்பு' },
-  { id: 'oil-ruchi', category: 'oils', brand: 'Ruchi Gold', weight: '', price: 'xxx.xx', nameEn: 'Palm Oil', nameTa: 'பாமா எண்ணெய்' },
-  { id: 'oil-sunrich', category: 'oils', brand: 'Sun Rich', weight: '', price: 'xxx.xx', nameEn: 'Sunflower Refined Oil', nameTa: 'சூரியகாந்தி எண்ணெய்' },
-  { id: 'salt-25', category: 'other', brand: '', weight: '25kg', price: 'xxx.xx', nameEn: 'Salt', nameTa: 'உப்பு' },
-  { id: 'jaggery-25', category: 'other', brand: '', weight: '25kg', price: 'xxx.xx', nameEn: 'Jaggery Powder', nameTa: 'வெல்லப் பொடி' },
-];
+const PRODUCTS = [];

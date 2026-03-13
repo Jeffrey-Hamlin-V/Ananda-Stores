@@ -36,171 +36,166 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage: storage });
 
+// Helper: Generate Shortcode
+function generateShortcode(name, brand) {
+  const clean = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5);
+  const base = `${clean(name)}-${clean(brand)}`.replace(/^-|-$/, '');
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `${base || 'prod'}-${rand}`;
+}
+
+// Helper: Ensure Category Exists
+async function ensureCategory(category) {
+  if (!category) return;
+  const cat = category.trim();
+  const res = await db.query('SELECT name FROM categories WHERE LOWER(name) = LOWER($1)', [cat]);
+  if (res.rows.length === 0) {
+    await db.query('INSERT INTO categories (name) VALUES ($1)', [cat]);
+  }
+}
+
 // Login endpoint
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  
-  const sql = 'SELECT * FROM users WHERE username = ?';
-  db.get(sql, [username], async (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
+  try {
+    const result = await db.query('SELECT * FROM users WHERE userid = $1', [username]);
+    const user = result.rows[0];
+    
     if (!user) return res.status(401).json({ error: 'User not found' });
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return res.status(401).json({ error: 'Incorrect password' });
 
     const token = jwt.sign(
-      { username: user.username, role: user.role }, 
+      { username: user.userid, role: user.role }, 
       process.env.JWT_SECRET, 
       { expiresIn: '2h' }
     );
-    res.json({ token, role: user.role, username: user.username });
-  });
+    res.json({ token, role: user.role, username: user.userid });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GET all products (Public)
-app.get('/api/products', (req, res) => {
-  db.all('SELECT * FROM products', [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json(rows);
-  });
+app.get('/api/products', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM products');
+    // Map PG lowercase columns to camelCase for frontend
+    const mapped = result.rows.map(p => ({
+      ...p,
+      nameEn: p.nameen,
+      nameTa: p.nameta
+    }));
+    res.json(mapped);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // CREATE product (Protected: All Admins)
-app.post('/api/products', authenticateToken, upload.single('image'), (req, res) => {
-  const { id, category, brand, weight, price, nameEn, nameTa, stock } = req.body;
+app.post('/api/products', authenticateToken, upload.single('image'), async (req, res) => {
+  console.log('POST /api/products request body:', req.body);
+  const { category, brand, weight, price, nameEn, nameTa, stock } = req.body;
   const image = req.file ? req.file.path : null;
-  const sql = 'INSERT INTO products (id, category, brand, weight, price, nameEn, nameTa, image, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-  const params = [id, category, brand, weight, price, nameEn, nameTa, image, stock || 0];
-  db.run(sql, params, function (err) {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json({ message: 'Product created', id: this.lastID });
-  });
+  const id = generateShortcode(nameEn, brand);
+
+  try {
+    await ensureCategory(category);
+    const sql = 'INSERT INTO products (id, category, brand, weight, price, nameEn, nameTa, image, stock) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+    const params = [id, category, brand, weight, price, nameEn, nameTa, image, parseInt(stock) || 0];
+    await db.query(sql, params);
+    res.json({ message: 'Product created', id });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // UPDATE product (Protected: All Admins)
-app.put('/api/products/:id', authenticateToken, upload.single('image'), (req, res) => {
+app.put('/api/products/:id', authenticateToken, upload.single('image'), async (req, res) => {
   const { category, brand, weight, price, nameEn, nameTa, stock } = req.body;
-  
-  let sql, params;
-  if (req.file) {
-    sql = 'UPDATE products SET category = ?, brand = ?, weight = ?, price = ?, nameEn = ?, nameTa = ?, image = ?, stock = ? WHERE id = ?';
-    params = [category, brand, weight, price, nameEn, nameTa, req.file.path, stock || 0, req.params.id];
-  } else {
-    sql = 'UPDATE products SET category = ?, brand = ?, weight = ?, price = ?, nameEn = ?, nameTa = ?, stock = ? WHERE id = ?';
-    params = [category, brand, weight, price, nameEn, nameTa, stock || 0, req.params.id];
-  }
+  const id = req.params.id;
 
-  db.run(sql, params, function (err) {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json({ message: 'Product updated', changes: this.changes });
-  });
+  try {
+    await ensureCategory(category);
+    let sql, params;
+    if (req.file) {
+      sql = 'UPDATE products SET category = $1, brand = $2, weight = $3, price = $4, nameEn = $5, nameTa = $6, image = $7, stock = $8 WHERE id = $9';
+      params = [category, brand, weight, price, nameEn, nameTa, req.file.path, parseInt(stock) || 0, id];
+    } else {
+      sql = 'UPDATE products SET category = $1, brand = $2, weight = $3, price = $4, nameEn = $5, nameTa = $6, stock = $7 WHERE id = $8';
+      params = [category, brand, weight, price, nameEn, nameTa, parseInt(stock) || 0, id];
+    }
+    await db.query(sql, params);
+    res.json({ message: 'Product updated' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // DELETE product (Protected: SUPER ADMIN ONLY)
-app.delete('/api/products/:id', authenticateToken, (req, res) => {
+app.delete('/api/products/:id', authenticateToken, async (req, res) => {
   if (req.user.role !== 'super_admin') {
     return res.status(403).json({ error: 'Only Super Admin can delete products' });
   }
-  const sql = 'DELETE FROM products WHERE id = ?';
-  db.run(sql, [req.params.id], function (err) {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json({ message: 'Product deleted', changes: this.changes });
-  });
+  try {
+    await db.query('DELETE FROM products WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Product deleted' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// GET categories
+app.get('/api/categories', async (req, res) => {
+  try {
+    const result = await db.query('SELECT name FROM categories ORDER BY name ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('GET /api/categories error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // --- User Management (Protected: SUPER ADMIN ONLY) ---
 
-// --- Categories ---
-
-// Seed categories if empty or missing defaults
-const defaultCategories = ['sugar', 'flours', 'dhalls', 'oils', 'rice', 'spices', 'other'];
-db.all('SELECT name FROM categories', (err, rows) => {
-  if (err) return;
-  const existing = new Set(rows.map(r => r.name.toLowerCase()));
-  defaultCategories.forEach(cat => {
-    if (!existing.has(cat)) {
-      db.run('INSERT INTO categories (name) VALUES (?)', [cat]);
-    }
-  });
-});
-
-app.get('/api/categories', (req, res) => {
-  db.all('SELECT * FROM categories', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-app.post('/api/categories', authenticateToken, (req, res) => {
+app.get('/api/users', authenticateToken, async (req, res) => {
   if (req.user.role !== 'super_admin') return res.sendStatus(403);
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ error: 'Name is required' });
-  db.run('INSERT INTO categories (name) VALUES (?)', [name], (err) => {
-    if (err) return res.status(400).json({ error: 'Category already exists' });
-    res.json({ message: 'Category added' });
-  });
+  try {
+    const result = await db.query('SELECT userid as username, role FROM users');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.delete('/api/categories/:name', authenticateToken, (req, res) => {
-  if (req.user.role !== 'super_admin') return res.sendStatus(403);
-  db.run('DELETE FROM categories WHERE name = ?', [req.params.name], function(err) {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json({ message: 'Category deleted' });
-  });
-});
-
-// List all users
-app.get('/api/users', authenticateToken, (req, res) => {
-  if (req.user.role !== 'super_admin') return res.sendStatus(403);
-  db.all('SELECT username, role FROM users', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-// Create new user
 app.post('/api/users', authenticateToken, async (req, res) => {
   if (req.user.role !== 'super_admin') return res.sendStatus(403);
   const { username, password, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const sql = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
-  db.run(sql, [username, hashedPassword, role], (err) => {
-    if (err) return res.status(400).json({ error: 'Username already exists' });
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query('INSERT INTO users (userid, password, role) VALUES ($1, $2, $3)', [username, hashedPassword, role]);
     res.json({ message: 'User created' });
-  });
+  } catch (err) {
+    res.status(400).json({ error: 'User already exists or database error' });
+  }
 });
 
-// Delete user (Protected: SUPER ADMIN ONLY)
-app.get('/api/users/:username', authenticateToken, (req, res) => {
-  // Check if user exists (simple check for management)
-  db.get('SELECT username FROM users WHERE username = ?', [req.params.username], (err, row) => {
-    if (err || !row) return res.status(404).json({ error: 'User not found' });
-    res.json(row);
-  });
-});
-
-app.delete('/api/users/:username', authenticateToken, (req, res) => {
+app.delete('/api/users/:username', authenticateToken, async (req, res) => {
   if (req.user.role !== 'super_admin') return res.sendStatus(403);
-  
   const targetUsername = req.params.username;
-  
-  // Prevent self-deletion
   if (targetUsername === req.user.username) {
     return res.status(400).json({ error: 'You cannot delete your own account' });
   }
-
-  const sql = 'DELETE FROM users WHERE username = ?';
-  db.run(sql, [targetUsername], function (err) {
-    if (err) return res.status(400).json({ error: err.message });
-    res.json({ message: 'User deleted', changes: this.changes });
-  });
+  try {
+    await db.query('DELETE FROM users WHERE userid = $1', [targetUsername]);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-// --- Contact Form (Nodemailer) ---
-
+// --- Contact Form ---
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -211,35 +206,28 @@ const transporter = nodemailer.createTransport({
 
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
-
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'All fields are required' });
-  }
+  if (!name || !email || !message) return res.status(400).json({ error: 'All fields are required' });
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER, // The client receives the email
+    to: process.env.EMAIL_USER,
     subject: `New Message from ${name} (Ananda Stores)`,
     text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    replyTo: email // Clicking reply will go to the customer
+    replyTo: email
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Email Error:', error);
-      return res.status(500).json({ error: 'Failed to send email. Check credentials.' });
-    }
-    console.log('Email sent info:', info);
-    res.json({ message: 'Email sent successfully!' });
+    if (error) return res.status(500).json({ error: 'Failed' });
+    res.json({ message: 'Sent' });
   });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use! Try killing the previous process.`);
-  } else {
-    console.error('Server error:', err);
-  }
 });

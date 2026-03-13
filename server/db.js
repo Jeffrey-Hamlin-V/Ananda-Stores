@@ -1,32 +1,60 @@
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const dbPath = path.resolve(__dirname, 'database.sqlite');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Error opening database', err.message);
-  } else {
-    console.log('Connected to the SQLite database.');
-    db.run(`CREATE TABLE IF NOT EXISTS products (
-      id TEXT PRIMARY KEY,
-      category TEXT,
-      brand TEXT,
-      weight TEXT,
-      price TEXT,
-      nameEn TEXT,
-      nameTa TEXT,
-      image TEXT,
-      stock INTEGER DEFAULT 0
-    )`);
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      username TEXT PRIMARY KEY,
-      password TEXT,
-      role TEXT
-    )`);
-    db.run(`CREATE TABLE IF NOT EXISTS categories (
-      name TEXT PRIMARY KEY
-    )`);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Required for Railway/Render/etc.
   }
 });
 
-module.exports = db;
+const initDb = async () => {
+  const client = await pool.connect();
+  try {
+    console.log('Connected to PostgreSQL database.');
+    
+    // Create Users table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        userid TEXT PRIMARY KEY,
+        password TEXT,
+        role TEXT
+      );
+    `);
+
+    // Create Products table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS products (
+        id TEXT PRIMARY KEY,
+        nameEn TEXT,
+        nameTa TEXT,
+        brand TEXT,
+        weight TEXT,
+        category TEXT,
+        price TEXT,
+        stock INTEGER DEFAULT 0,
+        image TEXT
+      );
+    `);
+
+    // Create Categories table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS categories (
+        name TEXT PRIMARY KEY
+      );
+    `);
+
+  } catch (err) {
+    console.error('Error initializing PostgreSQL schemas:', err.message);
+  } finally {
+    client.release();
+  }
+};
+
+initDb();
+
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  pool
+};

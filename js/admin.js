@@ -94,8 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!p) return;
 
     document.getElementById('editId').value = p.id;
-    document.getElementById('prodId').value = p.id;
-    document.getElementById('prodId').readOnly = true;
     document.getElementById('prodCategory').value = p.category;
     document.getElementById('prodNameEn').value = p.nameEn;
     document.getElementById('prodNameTa').value = p.nameTa;
@@ -104,12 +102,38 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('prodPrice').value = p.price;
     document.getElementById('prodStock').value = p.stock || 0;
     
+    document.getElementById('newCategoryInput').style.display = 'none';
     document.getElementById('currentImageInfo').textContent = p.image ? `Current: ${p.image.split('/').pop()}` : 'No image uploaded';
     document.getElementById('imagePreview').style.display = 'none';
 
     document.getElementById('modalTitle').textContent = 'Edit Product';
     document.getElementById('productFormModal').style.display = 'flex';
   };
+
+  // --- Category Logic ---
+  async function loadCategories() {
+    const resp = await fetch(`${API_URL}/categories`);
+    const cats = await resp.json();
+    const select = document.getElementById('prodCategory');
+    const currentVal = select.value;
+    
+    select.innerHTML = '<option value="">Select Category</option>' + 
+      cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('') +
+      '<option value="NEW_CATEGORY">+ Add New Category</option>';
+    
+    if (currentVal) select.value = currentVal;
+  }
+
+  document.getElementById('prodCategory').addEventListener('change', (e) => {
+    const input = document.getElementById('newCategoryInput');
+    if (e.target.value === 'NEW_CATEGORY') {
+      input.style.display = 'block';
+      input.required = true;
+    } else {
+      input.style.display = 'none';
+      input.required = false;
+    }
+  });
 
   // --- User Management ---
   async function loadUsers() {
@@ -148,16 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('manageUsersBtn').addEventListener('click', () => {
     const prodSec = document.getElementById('productsSection');
     const userSec = document.getElementById('usersSection');
-    const catSec = document.getElementById('categoriesSection');
     const btn = document.getElementById('manageUsersBtn');
     
     if (userSec.style.display === 'none') {
       userSec.style.display = 'block';
       prodSec.style.display = 'none';
-      catSec.style.display = 'none';
       loadUsers();
       btn.textContent = 'Show Products';
-      document.getElementById('manageCatsBtn').textContent = 'Manage Categories';
     } else {
       userSec.style.display = 'none';
       prodSec.style.display = 'block';
@@ -165,96 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- Category Management ---
-  async function loadCategories() {
-    const resp = await fetch(`${API_URL}/categories`);
-    const cats = await resp.json();
-    
-    // Update Product Form Dropdown
-    const select = document.getElementById('prodCategory');
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">Select Category</option>' + 
-      cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-    if (currentVal) select.value = currentVal;
-
-    // Update Category Table
-    const listBody = document.getElementById('adminCatList');
-    listBody.innerHTML = cats.map(c => `
-      <tr>
-        <td>${c.name}</td>
-        <td>
-          <button class="btn-delete" onclick="deleteCategory('${c.name}')">Delete</button>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  window.deleteCategory = async (name) => {
-    if (!confirm(`Are you sure you want to delete category "${name}"? This will NOT delete products in this category.`)) return;
-    const token = localStorage.getItem('adminToken');
-    const resp = await fetch(`${API_URL}/categories/${name}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (resp.ok) loadCategories();
-    else alert('Failed to delete category');
-  };
-
-  document.getElementById('manageCatsBtn').addEventListener('click', () => {
-    const prodSec = document.getElementById('productsSection');
-    const userSec = document.getElementById('usersSection');
-    const catSec = document.getElementById('categoriesSection');
-    const btn = document.getElementById('manageCatsBtn');
-
-    if (catSec.style.display === 'none') {
-      catSec.style.display = 'block';
-      prodSec.style.display = 'none';
-      userSec.style.display = 'none';
-      loadCategories();
-      btn.textContent = 'Show Products';
-      document.getElementById('manageUsersBtn').textContent = 'Manage Admins';
-    } else {
-      catSec.style.display = 'none';
-      prodSec.style.display = 'block';
-      btn.textContent = 'Manage Categories';
-    }
-  });
-
-  document.getElementById('addNewCatBtn').addEventListener('click', () => {
-    document.getElementById('catFormModal').style.display = 'flex';
-  });
-
-  document.getElementById('cancelCatForm').addEventListener('click', () => {
-    document.getElementById('catFormModal').style.display = 'none';
-  });
-
-  document.getElementById('catForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('newCatName').value.trim();
-    if (!name) return;
-
-    const token = localStorage.getItem('adminToken');
-    const resp = await fetch(`${API_URL}/categories`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ name })
-    });
-
-    if (resp.ok) {
-      document.getElementById('catFormModal').style.display = 'none';
-      document.getElementById('catForm').reset();
-      loadCategories();
-    } else {
-      const err = await resp.json();
-      alert(`Error: ${err.error || 'Failed to add category'}`);
-    }
-  });
-
   document.getElementById('addNewAdminBtn').addEventListener('click', () => {
     document.getElementById('userFormModal').style.display = 'flex';
+  });
+
+  document.getElementById('cancelUserForm').addEventListener('click', () => {
+    document.getElementById('userFormModal').style.display = 'none';
   });
 
   function showError(id, msg) {
@@ -323,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clearErrors();
     document.getElementById('productForm').reset();
     document.getElementById('editId').value = '';
-    document.getElementById('prodId').readOnly = false;
+    document.getElementById('newCategoryInput').style.display = 'none';
     document.getElementById('currentImageInfo').textContent = '';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('modalTitle').textContent = 'Add Product';
@@ -355,8 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
     clearErrors();
 
     const editId = document.getElementById('editId').value;
-    const prodId = document.getElementById('prodId').value.trim();
-    const category = document.getElementById('prodCategory').value;
+    let category = document.getElementById('prodCategory').value;
+    const newCategory = document.getElementById('newCategoryInput').value.trim();
     const nameEn = document.getElementById('prodNameEn').value.trim();
     const nameTa = document.getElementById('prodNameTa').value.trim();
     const weight = document.getElementById('prodWeight').value.trim();
@@ -364,22 +301,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const stock = document.getElementById('prodStock').value.trim();
     const imgFile = document.getElementById('prodImage').files[0];
 
+    if (category === 'NEW_CATEGORY') {
+      category = newCategory;
+    }
+
     let isValid = true;
-    if (!prodId) { showError('prodId', 'ID is required'); isValid = false; }
     if (!category) { showError('prodCategory', 'Category is required'); isValid = false; }
     if (!nameEn) { showError('prodNameEn', 'English name is required'); isValid = false; }
     if (!nameTa) { showError('prodNameTa', 'Tamil name is required'); isValid = false; }
     if (!weight) { showError('prodWeight', 'Weight/Quantity is required'); isValid = false; }
     if (!price || isNaN(price)) { showError('prodPrice', 'Please enter a valid numeric price'); isValid = false; }
     if (stock === '' || isNaN(stock)) { showError('prodStock', 'Valid stock number is required'); isValid = false; }
-
-    if (imgFile) {
-      const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      if (!allowed.includes(imgFile.type)) {
-        showError('prodImage', 'Invalid file type. Please upload JPG, PNG or WEBP');
-        isValid = false;
-      }
-    }
 
     if (!isValid) return;
 
@@ -391,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.textContent = 'Saving...';
     
     const formData = new FormData();
-    formData.append('id', prodId);
     formData.append('category', category);
     formData.append('nameEn', nameEn);
     formData.append('nameTa', nameTa);
@@ -418,6 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (resp.ok) {
         document.getElementById('productFormModal').style.display = 'none';
+        loadCategories();
         loadProducts(role);
       } else {
         const err = await resp.json();
@@ -438,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (role === 'super_admin') {
       document.getElementById('manageUsersBtn').style.display = 'inline-block';
-      document.getElementById('manageCatsBtn').style.display = 'inline-block';
     }
 
     loadCategories(); // Always load categories for the product form

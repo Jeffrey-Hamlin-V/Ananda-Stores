@@ -94,13 +94,13 @@ async function fetchProducts() {
   } catch (error) {
     console.error('Fetch error:', error);
     // Fallback to local PRODUCTS if available or show error
-    productsData = typeof PRODUCTS !== 'undefined' ? PRODUCTS : [];
+    productsData = [];
     renderProducts(null);
   }
 }
 
 function filterProductsBySearch(query) {
-  const currentList = productsData.length > 0 ? productsData : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []);
+  const currentList = productsData;
   if (!query || !query.trim()) return currentList;
   const q = query.trim().toLowerCase();
   return currentList.filter((p) => {
@@ -119,7 +119,7 @@ function renderProducts(productList) {
   if (!container) return;
 
   const t = TRANSLATIONS[currentLang];
-  const list = productList != null ? productList : (productsData.length > 0 ? productsData : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []));
+  const list = productList != null ? productList : productsData;
   const priceLabel = t.products?.priceLabel || 'Price';
   
   // Apply Search, Sort, and Price Filter
