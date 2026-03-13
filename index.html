@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ta">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Ananda Stores, Madurai — Wholesale groceries since 1983. Wheat flour, maida, sooji, atta, sugar, salt, dhalls, palm oil. Prop: C. BALAJI." />
+  <title>Ananda Stores | Madurai — Wholesale Groceries</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <header class="header" id="header">
+    <div class="header__left">
+      <button type="button" class="lang-toggle lang-toggle--detailed" id="langToggle"
+        aria-label="Toggle language"></button>
+    </div>
+    <div class="header__center">
+      <span id="headerShopName" class="header__name"></span>
+    </div>
+    <nav class="header__right">
+      <a href="#about" class="btn btn--small nav-cta" data-i18n="nav.about">About</a>
+      <a href="#products" class="btn btn--small nav-cta" data-i18n="nav.products">Products</a>
+      <a href="#contact" class="btn btn--small nav-cta" data-i18n="nav.contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero__inner">
+        <h1 id="heroTitle" class="hero__title"></h1>
+        <div class="hero__actions">
+          <a href="#products" class="btn btn--primary" data-i18n="nav.products">Products</a>
+          <a href="#contact" class="btn btn--secondary" data-i18n="nav.contact">Contact Us</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="container">
+        <div class="about__section about__section--intro">
+          <h2 class="section-title" data-i18n="about.title">About Us</h2>
+          <div class="about__text">
+            <p data-i18n="about.intro"></p>
+          </div>
+          <div class="about__image-row">
+            <div class="about__img-placeholder">
+              <img src="https://placehold.co/600x400/e8f0f6/1e5a8e?text=Store+Front" alt="Ananda Stores Front" />
+            </div>
+            <div class="about__img-placeholder">
+              <img src="https://placehold.co/600x400/e8f0f6/1e5a8e?text=Inside+View" alt="Ananda Stores Inside" />
+            </div>
+          </div>
+        </div>
+
+        <div class="about__section about__section--highlights">
+          <h3 class="about__subtitle" data-i18n="highlights.title">Why Ananda Stores</h3>
+          <div class="about__text">
+            <ul class="highlights__list">
+              <li data-i18n="highlights.since">Since 1983</li>
+              <li data-i18n="highlights.bulk">Bulk orders welcome</li>
+              <li data-i18n="highlights.brands">Quality brands: Lion, Cycle, Sun Rich, Ruchi Gold</li>
+            </ul>
+            <p class="highlights__prop"><span data-i18n="highlights.proprietor">Proprietor</span>: C. BALAJI</p>
+          </div>
+          <div class="about__image-row">
+            <div class="about__img-placeholder">
+              <img src="https://placehold.co/600x400/e8f0f6/1e5a8e?text=Quality+Check" alt="Quality Selection" />
+            </div>
+            <div class="about__img-placeholder">
+              <img src="https://placehold.co/600x400/e8f0f6/1e5a8e?text=Bulk+Packing" alt="Bulk Packing" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="products" id="products">
+      <div class="container">
+        <h2 class="section-title" data-i18n="products.title">Our Products</h2>
+        <div class="products__filters">
+          <div class="filter-group">
+            <input type="search" id="productSearch" class="products__search" placeholder="Search products..."
+              data-i18n-placeholder="products.searchPlaceholder" />
+          </div>
+          <div class="filter-group">
+            <select id="productSort" class="products__sort">
+              <option value="default" data-i18n="sort.default">Sort By</option>
+              <option value="price-low" data-i18n="sort.priceLow">Price: Low to High</option>
+              <option value="price-high" data-i18n="sort.priceHigh">Price: High to Low</option>
+              <option value="name-az" data-i18n="sort.nameAZ">Name: A-Z</option>
+            </select>
+          </div>
+          <div class="filter-group price-filter">
+            <label for="priceRange"><span data-i18n="filter.maxPrice">Max Price</span>: ₹<span id="priceValue">5000</span></label>
+            <input type="range" id="priceRange" min="0" max="5000" step="50" value="5000">
+          </div>
+        </div>
+        <p id="productsNoResults" class="products__no-results" aria-live="polite"></p>
+        <div class="products__categories" id="productsContainer">
+          <!-- Filled by JS from PRODUCTS + TRANSLATIONS -->
+        </div>
+      </div>
+    </section>
+
+
+    <section class="contact" id="contact">
+      <div class="container">
+        <h2 class="section-title" data-i18n="contact.title">Contact Us</h2>
+        <div class="contact__grid">
+          <div class="contact__block contact__block--phone">
+            <h3 data-i18n="contact.phone">Phone</h3>
+            <a href="#" class="contact__link contact__phone" id="contactPhone">0452-2622007</a>
+          </div>
+          <div class="contact__block contact__block--whatsapp">
+            <h3 data-i18n="contact.whatsapp">WhatsApp</h3>
+            <a href="#" class="contact__link contact__whatsapp" id="contactWhatsapp">0452-2622007</a>
+          </div>
+          <div class="contact__block contact__block--address">
+            <h3 data-i18n="contact.address">Address</h3>
+            <p id="contactAddressDisplay" class="contact__address"></p>
+          </div>
+          <div class="contact__block contact__block--hours">
+            <h3 data-i18n="contact.hours">Business Hours</h3>
+            <p data-i18n="contact.hoursDetail"></p>
+            <p class="contact__sunday" data-i18n="contact.sunday"></p>
+          </div>
+        </div>
+
+        <div class="contact__map">
+          <iframe id="contactMap" src="" width="100%" height="300" style="border:0;" allowfullscreen=""
+            loading="lazy"></iframe>
+        </div>
+
+        <div class="contact__form-wrap">
+          <h3 data-i18n="contact.sendMessage">Send us a message</h3>
+          <form class="contact__form" id="contactForm" novalidate>
+            <label for="formName"><span data-i18n="contact.name">Name</span> <span class="required">*</span></label>
+            <input type="text" id="formName" name="name" required placeholder=""
+              data-i18n-placeholder="contact.namePlaceholder" />
+            <label for="formEmail"><span data-i18n="contact.email">Email</span> <span class="required">*</span></label>
+            <input type="email" id="formEmail" name="email" required placeholder=""
+              data-i18n-placeholder="contact.emailPlaceholder" />
+            <label for="formMessage"><span data-i18n="contact.message">Message</span> <span
+                class="required">*</span></label>
+            <textarea id="formMessage" name="message" rows="4" required placeholder=""
+              data-i18n-placeholder="contact.messagePlaceholder"></textarea>
+            <p class="form-feedback" id="formFeedback" aria-live="polite"></p>
+            <button type="submit" class="btn btn--primary" data-i18n="contact.submit">Send</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__contact"><a href="#" class="footer__phone" id="footerPhone">0452-2622007</a> · <span
+          id="footerAddress"></span></p>
+      <p class="footer__gstin" data-i18n="gstin">GSTIN: 33AFHPB9942A1ZV</p>
+    <p class="footer__credit">
+      <span data-i18n="footer.credit">Website by freelance developer</span> | 
+      <a href="admin.html" style="opacity: 0.5; font-size: 0.8rem;">Admin Login</a>
+    </p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Ananda Stores</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Admin specific simplistic styles */
+    .admin-container { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-blue); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .login-box { background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+    .login-box h2 { margin-bottom: 1rem; color: var(--color-blue); }
+    .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; }
+    .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
+    .admin-table th { background: var(--color-blue); color: white; }
+    .btn-delete { background: #e74c3c; color: white; border: none; padding: 0.25rem 0.5rem; cursor: pointer; border-radius: 4px; }
+    .btn-edit { background: var(--color-blue); color: white; border: none; padding: 0.25rem 0.5rem; cursor: pointer; border-radius: 4px; margin-right: 0.5rem; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .admin-header > div { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .product-form-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 900; }
+    .product-form-box { background: white; padding: 2rem; border-radius: var(--radius); width: 100%; max-width: 500px; box-shadow: var(--shadow); }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+    .error-msg { color: #e74c3c; font-size: 0.75rem; margin-top: 0.2rem; display: none; }
+    .form-group.has-error input { border-color: #e74c3c; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    /* Analytics Styles */
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); border-left: 4px solid var(--color-blue); }
+    .stat-card h3 { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+    .stat-card p { font-size: 1.5rem; font-weight: 700; color: var(--color-blue); margin: 0; }
+    
+    .low-stock { background-color: #ffebee !important; }
+    .low-stock td { color: #c62828; font-weight: 600; }
+    
+    .img-preview { max-width: 100px; max-height: 100px; margin-top: 0.5rem; border-radius: 4px; display: none; border: 1px solid #ddd; }
+  </style>
+</head>
+<body class="admin-body">
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-box">
+      <h2>Admin Login</h2>
+      <input type="text" id="adminUsername" placeholder="Username" style="padding: 0.5rem; margin-bottom: 0.5rem; width: 220px;"><br>
+      <input type="password" id="adminPassword" placeholder="Password" style="padding: 0.5rem; margin-bottom: 1rem; width: 220px;"><br>
+      <button class="btn btn--primary" id="loginBtn">Login</button>
+      <p id="loginError" style="color: red; margin-top: 0.5rem; font-size: 0.9rem; display: none;">Invalid username or password</p>
+    </div>
+  </div>
+
+  <div class="admin-container" id="adminContent" style="display:none;">
+    <div class="admin-header">
+      <div>
+        <h1>Ananda Stores Dashboard</h1>
+        <p id="welcomeMsg" style="margin: 0; opacity: 0.8; font-size: 0.9rem;"></p>
+      </div>
+      <div>
+        <button class="btn btn--secondary" id="manageCatsBtn" style="display:none; margin-right: 0.5rem;">Manage Categories</button>
+        <button class="btn btn--secondary" id="manageUsersBtn" style="display:none; margin-right: 0.5rem;">Manage Admins</button>
+        <button class="btn btn--primary" id="addProductBtn">Add New Product</button>
+        <button class="btn btn--secondary" id="logoutBtn" style="margin-left: 0.5rem;">Logout</button>
+      </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="analytics-grid" id="analyticsSection">
+      <div class="stat-card">
+        <h3>Total Products</h3>
+        <p id="statTotalProducts">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Stock Value</h3>
+        <p id="statTotalValue">₹0.00</p>
+      </div>
+      <div class="stat-card">
+        <h3>Categories</h3>
+        <p id="statTotalCategories">0</p>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div id="productsSection">
+      <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Name (EN)</th>
+          <th>Brand</th>
+          <th>Weight</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="adminProductList">
+        <!-- Products will be mapped here -->
+      </tbody>
+    </table>
+    </div>
+
+    <!-- User Management Section (Hidden initially) -->
+    <div id="usersSection" style="display:none; margin-top: 3rem; border-top: 2px solid #eee; padding-top: 2rem;">
+      <div style="display:flex; justify-content: space-between; align-items: center;">
+        <h2>Admin Management</h2>
+        <button class="btn btn--primary" id="addNewAdminBtn">Add New Admin</button>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminUserList">
+          <!-- Users mapped here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Categories Section -->
+    <div id="categoriesSection" style="display:none; margin-top: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>Category Management</h2>
+        <button class="btn btn--primary" id="addNewCatBtn">Add New Category</button>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Category Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminCatList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- User Form Modal -->
+  <div id="userFormModal" class="product-form-modal">
+    <div class="product-form-box">
+      <h2>Add New Admin/SuperAdmin</h2>
+      <form id="userForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="newUsername">
+          <div class="error-msg" id="err-newUsername">Username is required</div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="newPassword">
+          <div class="error-msg" id="err-newPassword">Password must be at least 6 characters</div>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="newRole">
+            <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+          <div class="error-msg" id="err-newRole">Role is required</div>
+        </div>
+        <div style="text-align: right; margin-top: 1rem;">
+          <button type="button" class="btn btn--secondary" id="cancelUserForm">Cancel</button>
+          <button type="submit" class="btn btn--primary" style="margin-left: 0.5rem;">Create User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="productFormModal" class="product-form-modal">
+    <div class="product-form-box">
+      <h2 id="modalTitle">Add Product</h2>
+      <form id="productForm">
+        <input type="hidden" id="editId">
+        <div class="form-group">
+          <label>ID (Unique Slug)</label>
+          <input type="text" id="prodId" placeholder="e.g. rice-lion-50">
+          <div class="error-msg" id="err-prodId">Unique ID is required</div>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="prodCategory">
+            <option value="">Select Category</option>
+          </select>
+          <div class="error-msg" id="err-prodCategory">Please select a category</div>
+        </div>
+        <div class="form-group">
+          <label>Name (English)</label>
+          <input type="text" id="prodNameEn">
+          <div class="error-msg" id="err-prodNameEn">English name is required</div>
+        </div>
+        <div class="form-group">
+          <label>Name (Tamil)</label>
+          <input type="text" id="prodNameTa">
+          <div class="error-msg" id="err-prodNameTa">Tamil name is required</div>
+        </div>
+        <div class="form-group">
+          <label>Brand (Optional)</label>
+          <input type="text" id="prodBrand">
+          <div class="error-msg" id="err-prodBrand"></div>
+        </div>
+        <div class="form-group">
+          <label>Weight (e.g. 50kg)</label>
+          <input type="text" id="prodWeight">
+          <div class="error-msg" id="err-prodWeight">Weight/Quantity is required</div>
+        </div>
+        <div class="form-group">
+          <label>Price</label>
+          <input type="text" id="prodPrice" placeholder="xxx.xx or 1200.00">
+          <div class="error-msg" id="err-prodPrice">Valid price is required (e.g. 100.00)</div>
+        </div>
+        <div class="form-group">
+          <label>Stock Count</label>
+          <input type="number" id="prodStock" placeholder="0">
+          <div class="error-msg" id="err-prodStock">Initial stock is required</div>
+        </div>
+        <div class="form-group">
+          <label>Product Image</label>
+          <input type="file" id="prodImage" accept="image/*">
+          <div class="error-msg" id="err-prodImage">Only images (JPG, PNG, JPEG) are allowed</div>
+          <img id="imagePreview" class="img-preview" alt="Preview">
+          <p id="currentImageInfo" style="font-size: 0.8rem; margin-top: 0.25rem; opacity: 0.7;"></p>
+        </div>
+        <div style="text-align: right; margin-top: 1rem;">
+          <button type="button" class="btn btn--secondary" id="cancelForm">Cancel</button>
+          <button type="submit" class="btn btn--primary" style="margin-left: 0.5rem;">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="catFormModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 950;">
+      <div class="product-form-box" style="max-width: 400px;">
+        <h2 id="catModalTitle">Add New Category</h2>
+        <form id="catForm">
+          <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" id="newCatName" placeholder="e.g. Rice" required>
+            <div class="error-msg" id="err-newCatName">Category name is required</div>
+          </div>
+          <div style="text-align: right; margin-top: 1rem;">
+            <button type="button" class="btn btn--secondary" id="cancelCatForm">Cancel</button>
+            <button type="submit" class="btn btn--primary" style="margin-left: 0.5rem;">Save Category</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

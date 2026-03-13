@@ -1,0 +1,25 @@
+# Security
+.env
+
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# Database (Ignored as requested)
+server/database.sqlite
+server/database.sqlite-journal
+
+# Large Media
+*.mp4
+WhatsApp Image*.jpeg
+
+# Logs and Temps
+server/check_db.js
+server/list_ids.js
+server_log.txt
+*.log
+
+# System
+.DS_Store
+Thumbs.db
