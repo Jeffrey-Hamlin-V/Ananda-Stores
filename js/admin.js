@@ -79,12 +79,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!confirm('Are you sure you want to delete this product?')) return;
     const token = localStorage.getItem('adminToken');
     const role = localStorage.getItem('adminRole');
-    const resp = await fetch(`${API_URL}/products/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (resp.ok) loadProducts(role);
-    else alert('Failed to delete');
+    
+    if (!token) {
+      alert('Your session has expired. Please log in again.');
+      window.location.reload();
+      return;
+    }
+
+    try {
+      const resp = await fetch(`${API_URL}/products/${id}`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        }
+      });
+      
+      if (resp.status === 403 || resp.status === 401) {
+        alert('Permission Denied: Your session expired or you are not a Super Admin.');
+        if (resp.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+        }
+        return;
+      }
+
+      if (resp.ok) {
+        loadProducts(role);
+      } else {
+        const errData = await resp.json();
+        alert(`Failed to delete: ${errData.error || resp.statusText}`);
+      }
+    } catch (err) {
+      alert('Failed to connect to the server to delete the product.');
+    }
   };
 
   window.editProduct = async (id) => {
