@@ -35,11 +35,17 @@
     <section class="hero" id="hero">
       <div class="hero__inner">
         <h1 id="heroTitle" class="hero__title"></h1>
+        <p id="heroSubtitle" class="hero__subtitle" data-i18n="hero.tagline">Wholesale Groceries Since 1983</p>
         <div class="hero__actions">
-          <a href="#products" class="btn btn--primary" data-i18n="nav.products">Products</a>
-          <a href="#contact" class="btn btn--secondary" data-i18n="nav.contact">Contact Us</a>
+          <a href="#products" class="btn btn--primary" data-i18n="hero.viewProducts">View Products</a>
+          <a href="#contact" class="btn btn--secondary" data-i18n="hero.call">Call Now</a>
         </div>
       </div>
+      <a href="#about" class="hero__scroll-indicator" aria-label="Scroll down">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </a>
     </section>
 
     <section class="about" id="about">
@@ -98,7 +104,8 @@
             </select>
           </div>
           <div class="filter-group price-filter">
-            <label for="priceRange"><span data-i18n="filter.maxPrice">Max Price</span>: ₹<span id="priceValue">5000</span></label>
+            <label for="priceRange"><span data-i18n="filter.maxPrice">Max Price</span>: ₹<span
+                id="priceValue">5000</span></label>
             <input type="range" id="priceRange" min="0" max="5000" step="50" value="5000">
           </div>
         </div>
@@ -114,17 +121,15 @@
       <div class="container">
         <h2 class="section-title" data-i18n="contact.title">Contact Us</h2>
         <div class="contact__grid">
-          <div class="contact__block contact__block--phone">
-            <h3 data-i18n="contact.phone">Phone</h3>
-            <a href="#" class="contact__link contact__phone" id="contactPhone">0452-2622007</a>
-          </div>
-          <div class="contact__block contact__block--whatsapp">
-            <h3 data-i18n="contact.whatsapp">WhatsApp</h3>
-            <a href="#" class="contact__link contact__whatsapp" id="contactWhatsapp">0452-2622007</a>
-          </div>
           <div class="contact__block contact__block--address">
             <h3 data-i18n="contact.address">Address</h3>
             <p id="contactAddressDisplay" class="contact__address"></p>
+          </div>
+          <div class="contact__block contact__block--contact-info">
+            <h3 data-i18n="contact.phoneWa">Phone & WhatsApp</h3>
+            <p><a href="#" class="contact__link contact__phone" id="contactPhone"
+                style="display:block;margin-bottom:0.5rem;">0452-2622007</a></p>
+            <p><a href="#" class="contact__link contact__whatsapp" id="contactWhatsapp">0452-2622007</a></p>
           </div>
           <div class="contact__block contact__block--hours">
             <h3 data-i18n="contact.hours">Business Hours</h3>
@@ -137,24 +142,6 @@
           <iframe id="contactMap" src="" width="100%" height="300" style="border:0;" allowfullscreen=""
             loading="lazy"></iframe>
         </div>
-
-        <div class="contact__form-wrap">
-          <h3 data-i18n="contact.sendMessage">Send us a message</h3>
-          <form class="contact__form" id="contactForm" novalidate>
-            <label for="formName"><span data-i18n="contact.name">Name</span> <span class="required">*</span></label>
-            <input type="text" id="formName" name="name" required placeholder=""
-              data-i18n-placeholder="contact.namePlaceholder" />
-            <label for="formEmail"><span data-i18n="contact.email">Email</span> <span class="required">*</span></label>
-            <input type="email" id="formEmail" name="email" required placeholder=""
-              data-i18n-placeholder="contact.emailPlaceholder" />
-            <label for="formMessage"><span data-i18n="contact.message">Message</span> <span
-                class="required">*</span></label>
-            <textarea id="formMessage" name="message" rows="4" required placeholder=""
-              data-i18n-placeholder="contact.messagePlaceholder"></textarea>
-            <p class="form-feedback" id="formFeedback" aria-live="polite"></p>
-            <button type="submit" class="btn btn--primary" data-i18n="contact.submit">Send</button>
-          </form>
-        </div>
       </div>
     </section>
   </main>
@@ -164,10 +151,9 @@
       <p class="footer__contact"><a href="#" class="footer__phone" id="footerPhone">0452-2622007</a> · <span
           id="footerAddress"></span></p>
       <p class="footer__gstin" data-i18n="gstin">GSTIN: 33AFHPB9942A1ZV</p>
-    <p class="footer__credit">
-      <span data-i18n="footer.credit">Website by freelance developer</span> | 
-      <a href="admin.html" style="opacity: 0.5; font-size: 0.8rem;">Admin Login</a>
-    </p>
+      <p class="footer__credit">
+        <a href="admin.html" style="opacity: 0.5; font-size: 0.8rem;">Admin Login</a>
+      </p>
     </div>
   </footer>
 

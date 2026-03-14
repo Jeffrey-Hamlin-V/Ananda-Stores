@@ -259,54 +259,7 @@ function initLanguageToggle() {
 
 const API_URL = 'https://ananda-stores-production.up.railway.app/api';
 
-function initContactForm() {
-  const form = document.getElementById('contactForm');
-  const feedback = document.getElementById('formFeedback');
-  if (!form || !feedback) return;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const name = form.name?.value?.trim();
-    const email = form.email?.value?.trim();
-    const message = form.message?.value?.trim();
-
-    if (!name || !email || !message) {
-      feedback.textContent = 'Please fill out all fields.';
-      feedback.style.color = 'red';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    feedback.textContent = '';
-    feedback.style.color = '';
-
-    try {
-      const resp = await fetch(`${API_URL}/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message })
-      });
-
-      if (resp.ok) {
-        feedback.textContent = 'Message sent successfully! We will get back to you soon.';
-        feedback.style.color = '#27ae60';
-        form.reset();
-      } else {
-        const err = await resp.json();
-        feedback.textContent = `Error: ${err.error || 'Failed to send message.'}`;
-        feedback.style.color = 'red';
-      }
-    } catch (err) {
-      feedback.textContent = 'Connection error. Please try again later.';
-      feedback.style.color = 'red';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send';
-    }
-  });
-}
 
 async function init() {
   setContactLinks();
@@ -314,7 +267,6 @@ async function init() {
   await fetchProducts();
   initFilters();
   initLanguageToggle();
-  initContactForm();
 }
 
 if (document.readyState === 'loading') {

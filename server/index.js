@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const nodemailer = require('nodemailer');
 const db = require('./db');
 const authenticateToken = require('./auth');
 
