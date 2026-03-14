@@ -257,7 +257,7 @@ function initLanguageToggle() {
   });
 }
 
-const API_URL = `${window.location.protocol}//127.0.0.1:3000/api`;
+const API_URL = 'https://ananda-stores-production.up.railway.app/api';
 
 function initContactForm() {
   const form = document.getElementById('contactForm');
