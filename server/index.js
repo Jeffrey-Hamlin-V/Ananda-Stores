@@ -194,32 +194,7 @@ app.delete('/api/users/:username', authenticateToken, async (req, res) => {
   }
 });
 
-// --- Contact Form ---
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
 
-app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
-  if (!name || !email || !message) return res.status(400).json({ error: 'All fields are required' });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,
-    subject: `New Message from ${name} (Ananda Stores)`,
-    text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    replyTo: email
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) return res.status(500).json({ error: 'Failed' });
-    res.json({ message: 'Sent' });
-  });
-});
 
 // Global error handler
 app.use((err, req, res, next) => {
