@@ -87,7 +87,7 @@ function applyTranslations() {
 
 async function fetchProducts() {
   try {
-    const response = await fetch(`${window.location.protocol}//${window.location.hostname}:3000/api/products`);
+    const response = await fetch(`${API_URL}/products`);
     if (!response.ok) throw new Error('Network response was not ok');
     productsData = await response.json();
     renderProducts(null);
