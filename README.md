@@ -47,9 +47,3 @@ A bespoke B2B wholesale platform built for Ananda Stores, a Madurai-based grocer
 - **Analytics Overview**: High-level computational overview rendering Total Active Items, Unique Categories, and Total Inventory Value in real-time.
 
 ---
-
-
----
-
-## 🤝 Maintenance
-For feature enhancements, please coordinate via the project repository. Before running localized updates, verify that your IP configuration interfaces with the Railway production database accurately (or pivot your local `.env` setup to a Dockerized/local Postgres instance as needed).
