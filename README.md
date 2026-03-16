@@ -32,6 +32,22 @@ A bespoke B2B wholesale platform built for Ananda Stores, a Madurai-based grocer
 
 ---
 
+## 📁 Folder Structure
+
+```text
+├── css/             # Stylesheets (Vanilla CSS with variables)
+├── js/              # Client-side scripts (app.js, admin.js, data.js)
+├── server/          # Node.js backend environment
+│   ├── index.js     # Express server, API endpoints, Cloudinary config
+│   ├── db.js        # PostgreSQL database connection
+│   └── auth.js      # JWT authentication middleware
+├── index.html       # Public e-commerce landing page
+├── admin.html       # Secure inventory management dashboard
+└── README.md        # Project documentation
+```
+
+---
+
 ## ✨ Core Features
 
 ### Client-Facing Application
